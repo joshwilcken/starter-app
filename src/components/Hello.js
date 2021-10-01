@@ -1,34 +1,31 @@
-import React, { Component } from 'react';
-import { getHelloMessage } from "../actions/helloAction";
+import React, { useEffect, useState } from 'react';
+import { getHelloMessage, } from "../actions/helloAction";
 
-class Hello extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      message: 'No message from server'
-    };
-  }
+function Hello() {
+  const [message, setMessage] = useState("No message from server")
+  const [isMounted, setIsMounted] = useState(false)
 
-  componentDidMount() {
-    this._isMounted = true;
+  useEffect(() => {
+    setIsMounted(true);
     getHelloMessage().then(message => {
-      if (this._isMounted)
-        this.setState({message});
+      if (isMounted)
+        setMessage(message);
     }).catch(() => {
-      if (this._isMounted)
-        this.setState({message: 'The server did not respond so...hello from the client!'});
+      if (isMounted)
+        setMessage('The server did not respond so...hello from the client!');
     });
-  }
+  }, [])
 
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
+  useEffect(() => {
 
-  render() {
-    return (
-      <div>{this.state.message}</div>
-    );
-  }
+    return () => {
+      setIsMounted(false);
+    }
+  });
+
+  return (
+    <div>{message}</div>
+  );
 }
 
 export default Hello;
